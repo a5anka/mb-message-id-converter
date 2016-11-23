@@ -26,7 +26,7 @@
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
         <form id="my-form" class="form-signin">
-          <h2 class="form-signin-heading">Enter Message ID</h2>
+          <h2 class="form-signin-heading">Convert Message ID to Date</h2>
           <label for="inputMessageId" class="sr-only">Message ID</label>
           <input type="number" id="inputMessageId" class="form-control" placeholder="Message ID" required autofocus>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Convert</button>
@@ -53,8 +53,15 @@
 
          var dateResult = document.getElementById('dateResult');
          var referencePoint = (new Decimal(41)).times(365).times(24).times(60).times(60).times(1000);
-         var startTimeInSeconds = messageId.dividedToIntegerBy(Decimal.pow(2, 18)).plus(referencePoint);
-         dateResult.innerHTML = 'Time: ' + (new Date(startTimeInSeconds.toNumber())).toString();
+         var relativeStartTime = messageId.dividedToIntegerBy(Decimal.pow(2, 18));
+         var startTimeInSeconds = relativeStartTime.plus(referencePoint);
+
+	 var nodeIndex = messageId.minus(relativeStartTime.times(Decimal.pow(2, 18))).dividedToIntegerBy(Decimal.pow(2, 10));
+
+         var offset = messageId.minus(relativeStartTime.times(Decimal.pow(2, 18))).minus(nodeIndex.times(1024))
+         dateResult.innerHTML = 'Time: ' + (new Date(startTimeInSeconds.toNumber())).toString()
+                                + '<br/>Node Index:' + nodeIndex
+                                + '<br/>Offset : ' + offset;
 
          e.preventDefault();
        };
